@@ -169,8 +169,10 @@ Widget username()
                     elevation: 30.0,
                    shadowColor: Colors.blue[400],
                     
-          child:       TextFormField(
-    
+      child: TextFormField(
+      onChanged: (val){
+          password = val;
+      },
       decoration: InputDecoration(
         labelText: 'Password',
         hintText: 'Password',
@@ -201,18 +203,16 @@ Widget title()
     padding: EdgeInsets.only(top: 30.0),
     child: Column(
       children: <Widget>[
-        Text('Welcome!', style: TextStyle(
+        Text('Welcome!',
+        style: TextStyle(
           color: Colors.blue[600],
           fontSize: 30.0,
-
         ),
         ),
       ],
     ),
   );
 }
-
-  onChanged() {}
 
 
 }
