@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 class Login extends StatefulWidget
 {
   @override
@@ -7,6 +8,32 @@ class Login extends StatefulWidget
 }
 
 class _LoginState extends State<Login> {
+  TextEditingController emailAddressController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
+  String emailAddress;
+  String password;
+  void _showDialog()
+  {
+    showDialog(
+      context: context,
+      builder: (BuildContext context)
+      {
+        return AlertDialog(
+          title: Text('Wrong Credentials'),
+          content: Text('Wrong Credentials Again'),
+          actions: <Widget>[
+            new FlatButton(
+              child: Text('Close'),
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      }
+
+    );
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -15,29 +42,29 @@ class _LoginState extends State<Login> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              ClipPath(
+          /*    ClipPath(
                 clipper: MyClipper(),
                 child: Container(
-                  height: 400.0,
+                  height: 350.0,
                   decoration: BoxDecoration(
                     color: Colors.blue,
 
                   ),
                 ),
-              ),
-              
+              ), */
+              Container( padding: EdgeInsets.only(top: 40.0),),
               title(),
               Container(
                 padding: EdgeInsets.only(bottom: 20.0),
 
               ),
-              emailAddress(),
+              username(),
               Container(
                 
                 
                 padding: EdgeInsets.only(bottom: 10.0),
               ),
-              password(),
+              passwordLog(),
                Container(
                  padding: EdgeInsets.only(top: 17.0),
                  width: 200.0,
@@ -46,7 +73,29 @@ class _LoginState extends State<Login> {
                  child: RaisedButton(
                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.0)),  
 
-                   onPressed: (){},
+                   onPressed: () async{
+                     setState(() {});
+                     Map<String, dynamic> positionDetails = {
+                       "emailAddress": emailAddressController.text,
+                       "password": passwordController.text,
+                     };
+                     var temp = json.encode(positionDetails);
+                     var url ="http://scanq.herokuapp.com/api/login/";
+                     var response = await http.post(url,body:temp);
+                     var t = response.body;
+                     var jsonResult = json.decode(t.toString());
+                     var result = jsonResult["login"];
+                     if(result==true)
+                     {
+                       Navigator.pushReplacement(context, MaterialPageRoute(
+                        builder: (BuildContext context) => Home(emailAddress: emailAddress, password:password)
+                       ));
+                     }
+                     else
+                     {
+                       _showDialog();
+                     }
+                   },
                    color: Colors.blue,
 
                    child: Text('Login',
@@ -66,7 +115,7 @@ class _LoginState extends State<Login> {
     );
   }
   
-Widget emailAddress()
+Widget username()
   {
     return Container(
       width: 350.0,
@@ -78,7 +127,11 @@ Widget emailAddress()
                     elevation: 10.0,
                    shadowColor: Colors.blue[400],
                     
-          child:       TextFormField(
+                    child:TextFormField(
+                       onChanged: (val)
+                      {
+                        emailAddress= val;
+                      },
     
       decoration: InputDecoration(
         labelText: 'Email Address',
@@ -98,11 +151,13 @@ Widget emailAddress()
                   )
                 ],
       ),
+      
       ),
+      
     );
     
   }
-  Widget password()
+  Widget passwordLog()
   {
     return Container(
       width: 350.0,
@@ -134,6 +189,7 @@ Widget emailAddress()
                   )
                 ],
       ),
+      
       ),
     );
     
@@ -142,6 +198,7 @@ Widget emailAddress()
 Widget title()
 {
   return Container(
+    padding: EdgeInsets.only(top: 30.0),
     child: Column(
       children: <Widget>[
         Text('Welcome!', style: TextStyle(
@@ -155,18 +212,21 @@ Widget title()
   );
 }
 
+  onChanged() {}
+
 
 }
-class MyClipper extends CustomClipper<Path>
+/*class MyClipper extends CustomClipper<Path>
 {
   @override
   Path getClip(Size size) {
     // TODO: implement getClip
     var path = new Path();
-    path.lineTo(0.0, size.height);
-    
-   path.lineTo(size.width,size.height/2-40 );
-   path.lineTo(size.width, 0.0);
+    path.lineTo(0.0, size.height-40);
+    path.quadraticBezierTo(size.width/4, size.height, size.width/2, size.height);
+    path.quadraticBezierTo(size.width-(size.width/4), size.height, size.width, size.height-40);
+    path.lineTo(size.width,0.0);
+    path.close();
         
     
     return path;
@@ -177,8 +237,8 @@ class MyClipper extends CustomClipper<Path>
     // TODO: implement shouldReclip
     return null;
   }
-  
+  */
   
 
 
-}
+
