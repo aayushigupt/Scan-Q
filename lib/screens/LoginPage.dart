@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dashboard.dart';
 class Login extends StatefulWidget
 {
   @override
@@ -36,22 +37,20 @@ class _LoginState extends State<Login> {
   }
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return MaterialApp(
       home: Scaffold(
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-          /*    ClipPath(
+              ClipPath(
                 clipper: MyClipper(),
                 child: Container(
                   height: 350.0,
                   decoration: BoxDecoration(
                     color: Colors.blue,
-
                   ),
                 ),
-              ), */
+              ),
               Container( padding: EdgeInsets.only(top: 40.0),),
               title(),
               Container(
@@ -76,20 +75,26 @@ class _LoginState extends State<Login> {
                    onPressed: () async{
                      setState(() {});
                      Map<String, dynamic> positionDetails = {
-                       "emailAddress": emailAddressController.text,
-                       "password": passwordController.text,
+                       "username": emailAddress,
+                       "password": password,
                      };
                      var temp = json.encode(positionDetails);
                      var url ="http://scanq.herokuapp.com/api/login/";
                      var response = await http.post(url,body:temp);
                      var t = response.body;
                      var jsonResult = json.decode(t.toString());
-                     var result = jsonResult["login"];
-                     if(result==true)
-                     {
-                       Navigator.pushReplacement(context, MaterialPageRoute(
-                        builder: (BuildContext context) => Home(emailAddress: emailAddress, password:password)
-                       ));
+                     var result = jsonResult["boolean"];
+                     if(result==true){
+                       Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => DashboardScreen(
+                              name: jsonResult["name"],
+                              email: jsonResult["email"],
+                              username: jsonResult["username"],
+                            )
+                          )
+                        );
                      }
                      else
                      {
@@ -105,7 +110,6 @@ class _LoginState extends State<Login> {
                    ),
                  ),
                )
-              
             ],
           ),
         ),
@@ -122,7 +126,6 @@ Widget username()
       child: Form(
         child: Column(
                 children:[
-                 
                   Material (
                     elevation: 10.0,
                    shadowColor: Colors.blue[400],
@@ -214,31 +217,24 @@ Widget title()
   );
 }
 
-
 }
-/*class MyClipper extends CustomClipper<Path>
-{
+
+class MyClipper extends CustomClipper<Path>{
+  
   @override
   Path getClip(Size size) {
-    // TODO: implement getClip
     var path = new Path();
     path.lineTo(0.0, size.height-40);
     path.quadraticBezierTo(size.width/4, size.height, size.width/2, size.height);
     path.quadraticBezierTo(size.width-(size.width/4), size.height, size.width, size.height-40);
     path.lineTo(size.width,0.0);
-    path.close();
-        
-    
+    path.close();  
     return path;
   }
-
+  
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
-    // TODO: implement shouldReclip
-    return null;
+    return true;
   }
-  */
-  
 
-
-
+}
